@@ -1,3 +1,4 @@
+const { redisConnection } = require("../config/redisConfig");
 const { ApiKey } = require("../models/user.model");
 
 const validateApiKey = async (req, res, next) => {
@@ -5,16 +6,41 @@ const validateApiKey = async (req, res, next) => {
     const apiKey = req.headers["x-api-key"];
     if (!apiKey) return res.status(401).json({ error: "API key required" });
 
-    const keyData = await ApiKey.findOne({ apiKey });
-    if (!keyData) return res.status(403).json({ error: "Invalid API key" });
+    // Fetch from Redis or MongoDB
+    let keyData = await redisConnection.get(`api_key:${apiKey}`);
+    if (keyData) {
+      keyData = JSON.parse(keyData);
+    } else {
+      keyData = await ApiKey.findOne({ apiKey });
+      if (!keyData) return res.status(403).json({ error: "Invalid API key" });
+      await redisConnection.setex(
+        `api_key:${apiKey}`,
+        600,
+        JSON.stringify(keyData)
+      );
+    }
 
-    if (keyData.usageCount >= keyData.planLimit) {
+    // Get usage count
+    let usageCount = await redisConnection.get(`api_usage:${apiKey}`);
+    if (!usageCount) {
+      usageCount = keyData.usageCount; // Initialize from DB
+      await redisConnection.set(`api_usage:${apiKey}`, usageCount);
+    }
+    usageCount = parseInt(usageCount);
+
+    if (usageCount >= keyData.planLimit) {
       return res.status(429).json({ error: "API limit exceeded" });
     }
 
-    // Increase usage count
-    keyData.usageCount += 1;
-    await keyData.save();
+    // Increment usage count
+    let newUsageCount = await redisConnection.incr(`api_usage:${apiKey}`);
+    console.log(`🔄 Updated usage count in Redis: ${newUsageCount}`);
+    let checkCount = await redisConnection.get(`api_usage:${apiKey}`);
+    console.log(`🟢 Redis stored count: ${checkCount}`);
+
+    // Update MongoDB immediately (for debugging)
+    await ApiKey.updateOne({ apiKey }, { $set: { usageCount: newUsageCount } });
+    console.log(`✅ Updated MongoDB usage count: ${newUsageCount}`);
 
     return res.status(200).json({ valid: true, data: keyData });
   } catch (error) {
