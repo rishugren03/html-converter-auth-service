@@ -13,28 +13,47 @@ const registerUser = async (req, res) => {
   const { email, password } = req.body;
 
   try {
+    // Check if user exists
     let user = await User.findOne({ email });
-    if (user) return res.status(400).json({ error: "User already exists" });
+    if (user) {
+      return res.status(400).json({ error: "User already exists" });
+    }
 
+    // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Create user
     user = new User({ email, password: hashedPassword });
     await user.save();
 
-    // Create API Key for the user
-    const apiKey = uuidv4();
+    // Generate API Key with prefix and more entropy
+    const apiKey = `sk_${uuidv4().replace(/-/g, "")}_${uuidv4()
+      .replace(/-/g, "")
+      .substring(0, 8)}`;
     const planLimit = 50; // Default limit for free users
 
-    const apiKeyEntry = new ApiKey({ userId: user._id, apiKey, planLimit });
+    // Save API Key
+    const apiKeyEntry = new ApiKey({
+      userId: user._id,
+      apiKey,
+      planLimit,
+      createdAt: new Date(),
+      isActive: true,
+    });
     await apiKeyEntry.save();
 
-    res.json({
-      message: "User registered",
-      apiKey,
+    res.status(201).json({
+      message: "User registered successfully",
+      apiKey, // Note: In production, you might want to only show this once
       token: generateToken(user.id),
+      user: {
+        id: user._id,
+        email: user.email,
+      },
     });
   } catch (error) {
     console.error("Registration Error:", error);
-    res.status(500).json({ error: "Server error" });
+    res.status(500).json({ error: "Server error during registration" });
   }
 };
 

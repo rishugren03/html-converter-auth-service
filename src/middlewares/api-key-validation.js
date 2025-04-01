@@ -32,16 +32,6 @@ const validateApiKey = async (req, res, next) => {
       return res.status(429).json({ error: "API limit exceeded" });
     }
 
-    // Increment usage count
-    let newUsageCount = await redisConnection.incr(`api_usage:${apiKey}`);
-    console.log(`🔄 Updated usage count in Redis: ${newUsageCount}`);
-    let checkCount = await redisConnection.get(`api_usage:${apiKey}`);
-    console.log(`🟢 Redis stored count: ${checkCount}`);
-
-    // Update MongoDB immediately (for debugging)
-    await ApiKey.updateOne({ apiKey }, { $set: { usageCount: newUsageCount } });
-    console.log(`✅ Updated MongoDB usage count: ${newUsageCount}`);
-
     return res.status(200).json({ valid: true, data: keyData });
   } catch (error) {
     console.error("API Key Middleware Error:", error);

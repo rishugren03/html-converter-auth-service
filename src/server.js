@@ -2,6 +2,7 @@ require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const limiter = require("./middlewares/rate-limiter.js");
+const syncUsageToDB = require("./utils/syncUsagetoDb.js");
 
 const connectDB = require("./config/db.js");
 
@@ -24,3 +25,6 @@ const PORT = process.env.PORT || 5000;
 console.log("Starting Auth Service...");
 
 app.listen(PORT, () => console.log(`Auth Service running on port ${PORT}`));
+
+setInterval(syncUsageToDB, 3 * 60 * 1000);
+console.log("🔄 API Usage Sync Job scheduled every 5 minutes");
