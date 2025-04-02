@@ -18,6 +18,10 @@ connectDB();
 const authRoutes = require("./routes/auth.route");
 const apiKeyRoute = require("./routes/api-key-validation/index.js");
 
+app.get("/", (req, res) => {
+  res.send("hii! I'm auth-service:)");
+});
+
 app.use("/api/auth", authRoutes);
 app.use("/api/api-key", apiKeyRoute);
 
