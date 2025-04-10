@@ -22,8 +22,8 @@ app.get("/auth", (req, res) => {
   res.send("hii! I'm auth-service:)");
 });
 
-app.use("/api/auth", authRoutes);
-app.use("/api/api-key", apiKeyRoute);
+app.use("/auth/api/auth", authRoutes);
+app.use("/auth/api/api-key", apiKeyRoute);
 
 const PORT = process.env.PORT || 5000;
 console.log("Starting Auth Service...");
