@@ -2,9 +2,8 @@ const mongoose = require("mongoose");
 
 const UserSchema = new mongoose.Schema({
   email: { type: String, required: true, unique: true },
-  password: { type: String, required: true },
-  plan: { type: String, enum: ["free", "pro", "enterprise"], default: "free" },
-  freeTrialLimit: { type: Number, default: 50 }, // Free trial request limit
+  plan: { type: String, enum: ["free", "pro", "pro-max"], default: "free" },
+  freeTrialLimit: { type: Number, default: 50 },
 });
 
 const ApiKeySchema = new mongoose.Schema({

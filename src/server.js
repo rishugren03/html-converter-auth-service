@@ -17,12 +17,13 @@ connectDB();
 
 const authRoutes = require("./routes/auth.route");
 const apiKeyRoute = require("./routes/api-key-validation/index.js");
+const fbUserRoute = require("./routes/firebase-auth/index.js");
 
 app.get("/auth", (req, res) => {
   res.send("hii! I'm auth-service:)");
 });
 
-app.use("/auth/api/auth", authRoutes);
+app.use("/auth/api/auth", authRoutes, fbUserRoute);
 app.use("/auth/api/api-key", apiKeyRoute);
 
 const PORT = process.env.PORT || 5000;
