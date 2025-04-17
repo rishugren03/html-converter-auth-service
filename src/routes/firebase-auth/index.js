@@ -1,5 +1,7 @@
 const express = require("express");
-const { saveUser } = require("../../controllers/firebaseAuth/email-pass");
+const {
+  saveUser,
+} = require("../../controllers/firebaseAuth/save-firebase-user");
 const verifyFirebaseToken = require("../../middlewares/verify-firebase-token");
 
 const router = express.Router();

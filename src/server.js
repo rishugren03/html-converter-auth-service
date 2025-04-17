@@ -18,6 +18,7 @@ connectDB();
 const authRoutes = require("./routes/auth.route");
 const apiKeyRoute = require("./routes/api-key-validation/index.js");
 const fbUserRoute = require("./routes/firebase-auth/index.js");
+const userManageRoute = require("./routes/user-management-route/index.js");
 
 app.get("/auth", (req, res) => {
   res.send("hii! I'm auth-service:)");
@@ -25,6 +26,7 @@ app.get("/auth", (req, res) => {
 
 app.use("/auth/api/auth", authRoutes, fbUserRoute);
 app.use("/auth/api/api-key", apiKeyRoute);
+app.use("/auth/api/user", userManageRoute);
 
 const PORT = process.env.PORT || 5000;
 console.log("Starting Auth Service...");

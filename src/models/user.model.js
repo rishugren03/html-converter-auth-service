@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 const UserSchema = new mongoose.Schema({
   email: { type: String, required: true, unique: true },
   plan: { type: String, enum: ["free", "pro", "pro-max"], default: "free" },
-  freeTrialLimit: { type: Number, default: 50 },
+  freeTrialLimit: { type: Number, default: 100 },
 });
 
 const ApiKeySchema = new mongoose.Schema({
