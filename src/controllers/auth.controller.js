@@ -22,7 +22,7 @@ const registerUser = async ({ email }) => {
   const apiKeyEntry = new ApiKey({
     userId: user._id,
     apiKey,
-    planLimit: 50,
+    planLimit: 300,
     createdAt: new Date(),
     isActive: true,
   });
