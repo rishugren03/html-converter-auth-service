@@ -1,10 +1,13 @@
 const admin = require("firebase-admin");
 
 if (!admin.apps.length) {
+  const serviceAccountBase64 = process.env.FIREBASE_SERVICE_ACCOUNT_BASE_64;
+  const serviceAccountJson = JSON.parse(
+    Buffer.from(serviceAccountBase64, "base64").toString("utf8")
+  );
+
   admin.initializeApp({
-    credential: admin.credential.cert(
-      require("../../firebase-service-account.json")
-    ),
+    credential: admin.credential.cert(serviceAccountJson),
   });
 }
 
