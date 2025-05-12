@@ -24,6 +24,10 @@ app.get("/auth", (req, res) => {
   res.send("hii! I'm auth-service:)");
 });
 
+app.get("/", (req, res) => {
+  res.send("pong :)");
+});
+
 app.use("/auth/api/auth", authRoutes, fbUserRoute);
 app.use("/auth/api/api-key", apiKeyRoute);
 app.use("/auth/api/user", userManageRoute);
