@@ -38,4 +38,4 @@ console.log("Starting Auth Service...");
 app.listen(PORT, () => console.log(`Auth Service running on port ${PORT}`));
 
 setInterval(syncUsageToDB, 3 * 60 * 1000);
-console.log("🔄 API Usage Sync Job scheduled every 5 minutes");
+console.log("🔄 API Usage Sync Job scheduled every 3 minutes");
