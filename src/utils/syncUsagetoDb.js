@@ -5,7 +5,6 @@ const syncUsageToDB = async () => {
   try {
     console.log("🔄 Syncing API usage data from Redis to MongoDB...");
 
-    // Get all keys matching "api_key:*"
     const keys = await redisConnection.keys("api_key:*");
 
     if (keys.length === 0) {
@@ -20,21 +19,25 @@ const syncUsageToDB = async () => {
       const apiData = JSON.parse(cachedData);
       const { apiKey, usageCount } = apiData;
 
-      // Fetch the existing usageCount from MongoDB for the corresponding API key
       const dbApiKey = await ApiKey.findOne({ apiKey });
-
       if (!dbApiKey) {
         console.log(`❌ No entry found for API Key: ${apiKey}`);
-        continue; // Skip if no entry found
+        continue;
       }
 
-      // Only sync if the usage count has changed
+      // ✅ Sync usage count if changed
       if (dbApiKey.usageCount !== usageCount) {
-        // Update MongoDB with the new usage count
         await ApiKey.updateOne({ apiKey }, { usageCount });
         console.log(`✅ Synced API Key: ${apiKey} - Usage: ${usageCount}`);
       } else {
         console.log(`🛑 No change in usage count for API Key: ${apiKey}`);
+      }
+
+      // ✅ Reset TTL if more than 10 min or no expiry
+      const ttl = await redisConnection.ttl(key);
+      if (ttl === -1 || ttl > 600) {
+        await redisConnection.expire(key, 600);
+        console.log(`⏳ TTL refreshed for ${key}`);
       }
     }
   } catch (error) {
@@ -43,6 +46,6 @@ const syncUsageToDB = async () => {
 };
 
 // Run every 5 minutes
-setInterval(syncUsageToDB, 3 * 60 * 1000);
+setInterval(syncUsageToDB, 5 * 60 * 1000);
 
 module.exports = syncUsageToDB;
