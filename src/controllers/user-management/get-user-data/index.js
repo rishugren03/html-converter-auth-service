@@ -1,4 +1,4 @@
-const { User, ApiKey } = require("../../models/user.model");
+const { User, ApiKey } = require("../../../models/user.model");
 
 const getUser = async (req, res) => {
   try {

@@ -1,5 +1,8 @@
 const express = require("express");
-const { registerUser, loginUser } = require("../controllers/auth.controller");
+const {
+  registerUser,
+  loginUser,
+} = require("../controllers/firebaseAuth/helper");
 
 const router = express.Router();
 

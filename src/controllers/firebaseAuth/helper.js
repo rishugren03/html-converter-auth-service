@@ -1,5 +1,5 @@
 const { v4: uuidv4 } = require("uuid");
-const { User, ApiKey } = require("../models/user.model");
+const { User, ApiKey } = require("../../models/user.model");
 
 const registerUser = async ({ email }) => {
   if (!email) {

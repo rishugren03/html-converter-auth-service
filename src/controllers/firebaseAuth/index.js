@@ -1,6 +1,6 @@
 const bcrypt = require("bcryptjs");
 const { FirebaseUser } = require("../../models/firebaseUser");
-const { registerUser, loginUser } = require("../auth.controller");
+const { registerUser, loginUser } = require("./helper");
 
 const saveUser = async (req, res) => {
   try {
