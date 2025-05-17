@@ -44,3 +44,7 @@ app.listen(PORT, () => console.log(`Auth Service running on port ${PORT}`));
 
 setInterval(syncUsageToDB, 5 * 60 * 1000);
 console.log("🔄 API Usage Sync Job scheduled every 5 minutes");
+
+process.on("uncaughtException", (err) => {
+  console.error(`Uncaught Exception`, err);
+});

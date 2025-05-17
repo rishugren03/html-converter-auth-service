@@ -1,17 +1,33 @@
 const { User, ApiKey } = require("../../../models/user.model");
+const { registerUser } = require("../../firebaseAuth/helper");
+
+function wait(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
 
 const getUser = async (req, res) => {
   try {
     const { email } = req.user;
 
-    const user = await User.findOne({ email }).lean();
-    const apiKeyDetails = await ApiKey.findOne({ userId: user._id }).lean();
+    let user = await User.findOne({ email }).lean();
+
+    console.log(user);
 
     if (!user) {
+      console.warn(
+        `User not found in DB for email: ${email}, attempting to register...`
+      );
+      await registerUser({ email });
+      await wait(200);
+      user = await User.findOne({ email }).lean();
+    }
+
+    if (!user || !user._id) {
       return res.status(404).json({ message: "User not found!" });
     }
 
-    // Convert Mongoose documents to plain objects and merge them
+    const apiKeyDetails = await ApiKey.findOne({ userId: user._id });
+
     const responseData = {
       ...user,
       apiKey: apiKeyDetails || null,
@@ -22,10 +38,9 @@ const getUser = async (req, res) => {
       message: "User data retrieved successfully",
     });
   } catch (error) {
-    console.error("Error in getUser:", error);
+    console.error("Error in getUser:", error.message);
     res.status(500).json({
       message: "Internal server error",
-      error: process.env.NODE_ENV === "development" ? error.message : undefined,
     });
   }
 };
