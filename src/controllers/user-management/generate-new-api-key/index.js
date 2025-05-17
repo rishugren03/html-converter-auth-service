@@ -31,23 +31,10 @@ const createNewApiKey = async (req, res) => {
       // Update existing key
       existingKey.apiKey = newApiKey;
       existingKey.planLimit = planLimit;
-      existingKey.usageCount = 0;
       existingKey.createdAt = new Date();
       existingKey.isActive = true;
 
       await existingKey.save();
-    } else {
-      // Create a new key
-      const newApiKeyEntry = new ApiKey({
-        userId: user._id,
-        apiKey: newApiKey,
-        planLimit,
-        usageCount: 0,
-        createdAt: new Date(),
-        isActive: true,
-      });
-
-      await newApiKeyEntry.save();
     }
 
     return res.status(201).json({
