@@ -30,7 +30,7 @@ async function handlePaddleWebhook(req, res) {
       // case "subscription.resumed":
       //   break;
       default:
-        console.log("Unhandled Paddle event:", event_type);
+        console.log("Unhandled Paddle event:", eventType);
     }
   } catch (err) {
     console.error("Error processing Paddle event:", err.message);
